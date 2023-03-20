@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-    paths:
-      - '**.ts'
-      - '**.tsx'
 
 jobs:
   build:
@@ -23,7 +20,7 @@ jobs:
         cache: 'yarn'
     - run: yarn ci
     - run: yarn test --coverage
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v3
       with:
-        fail_ci_if_error: false
+        token: ${{secrets.CODECOV_TOKEN}}
         verbose: true
