@@ -47,7 +47,7 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]`.
 <Cascade.span>{/* ... */}</Cascade.span>
 ```
 
-### Advancded Demonstration
+### Advanced Demonstration
 
 ```tsx
 <Cascade className="foo" cascadeProps={{ className: 'bar' }}>
