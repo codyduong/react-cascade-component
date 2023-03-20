@@ -19,7 +19,7 @@ DRY out your code. Repeat yourself less with less-hassle.
 
 ## Example Use Case
 
-```typescript
+```tsx
 import Cascade from 'react-cascade-component';
 
 const App = () => {
@@ -42,14 +42,14 @@ const App = () => {
 Cascade by default is a `div` element but can be of any `JSX.IntrinsicElement` by setting
 the `as` prop value or using `Cascade.[JSX.IntrinsicElement]`.
 
-```typescript
+```tsx
 <Cascade as="span">{/* ... */}</Cascade>
 <Cascade.span>{/* ... */}</Cascade.span>
 ```
 
 ### Advancded Demonstration
 
-```typescript
+```tsx
 <Cascade className="foo" cascadeProps={{ className: 'bar' }}>
   <Cascade 
     className="bang" 
@@ -91,7 +91,7 @@ If you are simply using `react-cascade-component` as a means to transfer props d
 instead consider using React's built-in [ `useContext` ](https://react.dev/reference/react/useContext).
 
 ## Contribute
-Contributions are welcome! [Contribute](CONTRIBUTING.md).
+Contributions are welcome!
 
 ## License
 
