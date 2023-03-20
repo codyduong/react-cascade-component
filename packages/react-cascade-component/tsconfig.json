@@ -1,0 +1,25 @@
+{
+  "include": ["src/**/*", "scripts"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es5",
+    "module": "ESNext",
+    "jsx": "react",
+    "incremental": true,
+    "declaration": true,
+    "declarationDir": ".",
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": false,
+    "importHelpers": true,
+    "skipLibCheck": true
+  }
+}

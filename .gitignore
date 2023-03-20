@@ -1,0 +1,8 @@
+node_modules
+coverage
+packages/**/node_modules
+packages/**/.rollup.cache
+packages/**/dist
+**/package-lock.json
+**/yarn-error.log
+**/.env

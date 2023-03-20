@@ -1,0 +1,32 @@
+{
+  "name": "react-cascade-component-project",
+  "author": "Cody Duong <contact@codyduong.dev> (https://codyduong.dev/)",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "yarn workspace react-cascade-component build",
+    "lint": "yarn workspace react-cascade-component lint",
+    "size": "yarn workspace react-cascade-component lint:size",
+    "test": "yarn workspace react-cascade-component test",
+    "ci": "yarn install --frozen-lockfile",
+    "changeset": "changeset",
+    "release": "yarn build && changeset publish"
+  },
+  "bugs": {
+    "url": "https://github.com/codyduong/react-cascade-component/issues"
+  },
+  "homepage": "https://github.com/codyduong/react-cascade-component#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codyduong/react-cascade-component.git"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.0",
+    "@changesets/get-github-info": "^0.5.2"
+  }
+}
