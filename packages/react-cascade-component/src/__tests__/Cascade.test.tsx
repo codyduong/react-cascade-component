@@ -50,7 +50,7 @@ describe('Cascade', () => {
       );
       consoleError.mockRestore();
     });
-    test.skip.each(testDomElements)('%s', (domElement) => {
+    test.each(testDomElements)('%s', (domElement) => {
       const { container: c } = render(<C as={domElement} />);
       expect(c.getElementsByTagName(domElement)).toHaveLength(1);
     });
@@ -70,7 +70,7 @@ describe('Cascade', () => {
         consoleError.mockRestore();
       }
     );
-    test.skip.each(testDomElements)('%s', (domElement) => {
+    test.each(testDomElements)('%s', (domElement) => {
       const CascadeIntrinsicElement = C[domElement];
       const { container: c } = render(<CascadeIntrinsicElement />);
       expect(c.getElementsByTagName(domElement)).toHaveLength(1);
