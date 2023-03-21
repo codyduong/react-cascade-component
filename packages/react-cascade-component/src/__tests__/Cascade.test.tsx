@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import domElements from '../utils/domElements';
-import C from 'react-cascade-component';
+import C from '../Cascade';
 
 // Filter out some html elements that require certain dom shapes
 // or require a certain testing env to display
@@ -198,7 +198,7 @@ describe('Cascade', () => {
             <div />
             <label />
           </C.span>
-          <C.label>
+          <C.label cascadeTo={null}>
             <span />
             <label />
             <div className="baz" />
@@ -223,7 +223,7 @@ describe('Cascade', () => {
 
     // child classes
     expect(c.getElementsByClassName('foo')).toHaveLength(1);
-    expect(c.getElementsByClassName('bar')).toHaveLength(5);
+    expect(c.getElementsByClassName('bar')).toHaveLength(4);
     expect(c.getElementsByClassName('bang')).toHaveLength(1);
     expect(c.getElementsByClassName('baz')).toHaveLength(2);
 
@@ -352,7 +352,7 @@ describe('Cascade', () => {
     expect(c.firstElementChild?.childNodes).toHaveLength(5);
   });
   describe('invalid cascadeTo', () => {
-    test.each([null, false, NaN, { foo: 'bar' }])('%j', (cascadeTo) => {
+    test.each([false, NaN, { foo: 'bar' }])('%j', (cascadeTo) => {
       const consoleError = jest
         .spyOn(global.console, 'error')
         .mockImplementation();

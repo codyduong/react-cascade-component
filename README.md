@@ -57,9 +57,10 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]` .
   <tr>
     <td>
       <h3>as</h3>
-      Specifies what <code>&lt;Cascade/&gt;</code> is rendered as  
+      Specifies what <code>&lt;Cascade/&gt;</code> is rendered as. Defaults to <code>div</code>
     </td>
     <td>
+      <code>undefined</code><br></br>
       <code>keyof JSX.IntrinsicElement</code><br></br>
       <code>React.JSXElementConstructor&lt;any&gt;</code>
     </td>
@@ -72,9 +73,14 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]` .
   <tr>
     <td>
       <h3>cascadeTo</h3>
-      Specifies which child elements <code>cascadeProps</code> is sent to 
+      Specifies which child elements <code>cascadeProps</code> is sent to. If <code>null</code>
+      will send <code>cascadeProps</code> to all children elements. If <code>undefined</code> will
+      default to the outer <code>cascadeTo</code> if inside another <code>&lt;Cascade&gt;</code>
+      component. If not, it will send to all children elements.
     </td>
     <td>
+      <code>undefined</code><br></br>
+      <code>null</code><br></br>
       <code>keyof JSX.IntrinsicElement</code><br></br>
       <code>React.JSXElementConstructor&lt;any&gt;</code>
       <code>(keyof JSX.IntrinsicElement | React.JSXElementConstructor&lt;any&gt;)[]</code><br></br>
@@ -180,30 +186,36 @@ You can also specify a function instead:
 
 ### Nested Cascades
 The `<Cascade>` component can pass through to each other. By default it will both absorb and pass properties.
-However, nested `<Cascade>` components will not cascadeTo the same constrained types, instead widening out again. 
+Nested `<Cascade>` components **will** cascadeTo the same constrained types.
 `<Cascade absorbProps={false} />` will disable absorbing props but will still pass through through properties.
 
 ```tsx
 <Cascade className="foo" cascadeProps={{ className: 'bar' }}>
   <Cascade 
     className="bang" 
-    cascadeTo={[Cascade, Cascade.label, 'span']}
+    cascadeTo={[Cascade, 'span']}
   >
-    <Cascade.span>                
+    <Cascade.span>                {/* Cascade.span !== 'span' */}         
       <div />
       <div />
       <span />                    
       <label />
     </Cascade.span>
-    <Cascade.label>               {/* className="bar" */}
+    <Cascade 
+      cascadeTo={null}
+    >                     
       <span />                    {/* className="bar" */}
       <label />                   {/* className="bar" */}
-    </Cascade.label>
+    </Cascade>
+    <Cascade>                     {/* className="bar" */}
+      <span />                    {/* className="bar" */}
+      <label />                   
+    </Cascade>
     <Cascade                      /* className=undefined */
       absorbProps={false}
       cascadeTo="label"
     > 
-      <span />                    {/* className="bar" */}
+      <span />                    
       <label />                   {/* className="bar" */}
     </Cascade>
     <div>

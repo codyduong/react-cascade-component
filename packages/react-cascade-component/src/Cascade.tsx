@@ -66,7 +66,10 @@ export type CascadeBaseProps<
   ExtraProps extends Record<string, unknown>
 > = {
   as?: ElemType;
-  cascadeTo?: CascadeToArray<CascadeTo, CascadeToProps<CascadeTo, ExtraProps>>;
+  cascadeTo?: CascadeToArray<
+    CascadeTo,
+    CascadeToProps<CascadeTo, ExtraProps>
+  > | null;
   cascadeProps?: CascadeToProps<CascadeTo, ExtraProps>;
   absorbProps?: boolean;
   // passProps?: boolean;
@@ -126,6 +129,7 @@ function Cascade<
 ): JSX.Element {
   if (
     !(cascadeTo === undefined) &&
+    !(cascadeTo === null) &&
     !(typeof cascadeTo === 'string') &&
     !(typeof cascadeTo === 'function' && cascadeTo.length === 3) &&
     !Array.isArray(cascadeTo)
@@ -163,6 +167,8 @@ function Cascade<
         ...absoredProps,
         ...E.props,
         cascadeProps: { ...passedProps, ...(E.props.cascadeProps ?? {}) },
+        cascadeTo:
+          E.props.cascadeTo === undefined ? cascadeTo : E.props.cascadeTo,
       };
     }
 
