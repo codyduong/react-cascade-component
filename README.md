@@ -9,7 +9,7 @@
 
 Introducing CSS cascading to React components with first-class Typescript support right out of the box.
 
-DRY out your code. Repeat yourself less with less-hassle.
+DRY out your code. Repeat yourself less with less hassle.
 
 ## Installation
 
