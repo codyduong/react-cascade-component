@@ -104,16 +104,6 @@ function Cascade<
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any> = 'div'
 >(
-  props: CascadeProps<ElemType, CascadeTo, ExtraProps>,
-  ref: CascadeRef<ElemType>
-): JSX.Element;
-function Cascade<
-  ExtraProps extends Record<string, unknown> = Record<string, any>,
-  CascadeTo extends CascadeAsType = CascadeToDefault,
-  ElemType extends
-    | keyof JSX.IntrinsicElements
-    | React.JSXElementConstructor<any> = 'div'
->(
   /* eslint-disable prettier/prettier */
   {
     // @ts-expect-error: As long as no-one attempts to override generic manually, these subtypes will always match
