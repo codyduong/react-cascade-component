@@ -66,7 +66,10 @@ export type CascadeBaseProps<
   ExtraProps extends Record<string, unknown>
 > = {
   as?: ElemType;
-  cascadeTo?: CascadeToArray<CascadeTo, CascadeToProps<CascadeTo, ExtraProps>>;
+  cascadeTo?: CascadeToArray<
+    CascadeTo,
+    CascadeToProps<CascadeTo, ExtraProps>
+  > | null;
   cascadeProps?: CascadeToProps<CascadeTo, ExtraProps>;
   absorbProps?: boolean;
   // passProps?: boolean;
@@ -95,19 +98,11 @@ export type CascadeProps<
   CascadeAsProps<ElemType>;
 
 function Cascade<
-  ElemType extends keyof JSX.IntrinsicElements = 'div',
+  ExtraProps extends Record<string, unknown> = Record<string, any>,
   CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
->(
-  props: CascadeProps<ElemType, CascadeTo, ExtraProps>,
-  ref: CascadeRef<ElemType>
-): JSX.Element;
-function Cascade<
   ElemType extends
     | keyof JSX.IntrinsicElements
-    | React.JSXElementConstructor<any> = 'div',
-  CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
+    | React.JSXElementConstructor<any> = 'div'
 >(
   /* eslint-disable prettier/prettier */
   {
@@ -126,6 +121,7 @@ function Cascade<
 ): JSX.Element {
   if (
     !(cascadeTo === undefined) &&
+    !(cascadeTo === null) &&
     !(typeof cascadeTo === 'string') &&
     !(typeof cascadeTo === 'function' && cascadeTo.length === 3) &&
     !Array.isArray(cascadeTo)
@@ -163,6 +159,8 @@ function Cascade<
         ...absoredProps,
         ...E.props,
         cascadeProps: { ...passedProps, ...(E.props.cascadeProps ?? {}) },
+        cascadeTo:
+          E.props.cascadeTo === undefined ? cascadeTo : E.props.cascadeTo,
       };
     }
 
@@ -202,11 +200,11 @@ function Cascade<
 }
 
 type CascadeFC = <
+  ExtraProps extends Record<string, unknown> = Record<string, any>,
+  CascadeTo extends CascadeAsType = CascadeToDefault,
   ElemType extends
     | keyof JSX.IntrinsicElements
-    | React.JSXElementConstructor<any> = 'div',
-  CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
+    | React.JSXElementConstructor<any> = 'div'
 >(
   props: CascadeProps<ElemType, CascadeTo, ExtraProps>
 ) => JSX.Element;
