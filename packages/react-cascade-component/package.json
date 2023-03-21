@@ -1,6 +1,6 @@
 {
   "name": "react-cascade-component",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A component for React to cascade properties",
   "author": "Cody Duong <contact@codyduong.dev> (https://codyduong.dev/)",
   "main": "dist/react-cascade-component.cjs.js",

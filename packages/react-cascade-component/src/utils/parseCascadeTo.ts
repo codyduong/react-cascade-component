@@ -1,4 +1,3 @@
-import { displayType } from '.';
 import {
   CascadeAsType,
   CascadeToArray,
@@ -6,6 +5,7 @@ import {
   CascadeToProps,
   CascadeToDefault,
 } from '../Cascade';
+import { displayType } from './displayType';
 
 export type ParsedCascadeToReturn<
   CascadeTo extends CascadeAsType,
@@ -56,8 +56,11 @@ export function parseCascadeTo<
           ? e
           : [e.type, e.callback];
         if (
+          type &&
           (typeof type === 'string' ||
-            (typeof type === 'function' && type.length === 1)) &&
+            (typeof type === 'function' && type.length === 1) ||
+            (typeof type === 'object' &&
+              ('render' in type || '$$typeof' in type))) &&
           ((typeof callback === 'function' && callback.length === 2) ||
             callback === undefined ||
             callback === null)
@@ -74,11 +77,10 @@ export function parseCascadeTo<
       }
     } else {
       if (
-        typeof e === 'string' ||
-        (typeof e === 'function' && e.length === 1) ||
-        (typeof e === 'object' &&
-          e !== null &&
-          ('render' in e || '$$typeof' in e))
+        e &&
+        (typeof e === 'string' ||
+          (typeof e === 'function' && e.length === 1) ||
+          (typeof e === 'object' && ('render' in e || '$$typeof' in e)))
       ) {
         typeArray.push(e);
         callbackArray.push(undefined);
