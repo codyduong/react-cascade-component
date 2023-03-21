@@ -46,8 +46,142 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]` .
 <Cascade as="span">{/* ... */}</Cascade>
 <Cascade.span>{/* ... */}</Cascade.span>
 ```
+## API
 
-### Advanced Demonstration
+<table>
+  <tr>
+    <th>prop</th>
+    <th>type</th>
+    <th>examples</th>
+  </tr>
+  <tr>
+    <td>
+      <h3>as</h3>
+      Specifies what <code>&lt;Cascade/&gt;</code> is rendered as  
+    </td>
+    <td>
+      <code>keyof JSX.IntrinsicElement</code><br></br>
+      <code>React.JSXElementConstructor&lt;any&gt;</code>
+    </td>
+    <td>
+      <code>"div"</code><br></br>
+      <code>"span"</code><br></br>
+      <code>MyCustomComponent</code><br></br>
+    </td>
+  </td>
+  <tr>
+    <td>
+      <h3>cascadeTo</h3>
+      Specifies which child elements <code>cascadeProps</code> is sent to 
+    </td>
+    <td>
+      <code>keyof JSX.IntrinsicElement</code><br></br>
+      <code>React.JSXElementConstructor&lt;any&gt;</code>
+      <code>(keyof JSX.IntrinsicElement | React.JSXElementConstructor&lt;any&gt;)[]</code><br></br>
+    </td>
+    <td>
+      <code>"div"</code><br></br>
+      <code>["span", "div"]</code><br></br>
+      <code>MyCustomComponent</code><br></br>
+      <code>['span', MyCustomComponent]</code><br></br>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>cascadeProps</h3>
+      The `props` to cascade to child elements
+    </td>
+    <td>
+      <code>any</code><a href="#footnote-1"><sup>1</sup></a>
+    </td>
+    <td>
+      <code>{"className": "foobar", "customKey": "customValue"}</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>absorbProps</h3>
+      Whether or not the <code>&lt;Cascade&gt;</code> will absorb the
+      properties itself, or simply pass it on. Defaults to <code>true</code>
+    </td>
+    <td>
+      <code>boolean</code>
+    </td>
+    <td>
+      <code>true</code> <code>false</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>...rest</h3>
+      Any other properties to be used by <code>&lt;Cascade&gt;</code>
+    </td>
+    <td>
+      <code>JSX.IntrinsicElement[typeof as]</code>
+    </td>
+    <td>
+      Valid other properties may be <code>ref</code> <code>className</code> <code>id</code> and more
+    </td>
+  </tr>
+</table>
+<p id="footnote-1"><b>1</b> - The is not technically true, but practically true. It has a type dependent on <code>cascadeTo</code>, and will have type inference if <code>cascadeTo</code> is provided</p>
+
+## Demos
+
+### CascadeTo Callback
+The `<Cascade>` component has a callback parameter on `cascadeTo` which means you can specify handling, by default the callback is `(callbackProps, originalProps) => {...callbackProps, ...originalProps}`, ie. a shallow merge.
+
+```tsx
+<Cascade
+  cascadeTo={[
+    ['button', (c, o) => ({ ...c.buttonProps, ...o })],
+    [MyCustomComponent, (c, o) => ({ ...c.customProps, ...o })],
+  ]}
+  cascadeProps={{
+    buttonProps: {
+      onClick: onClickHandler,
+    },
+    customProps: {
+      className: 'foobar'
+    }
+  }}
+>
+  <button />
+  <div />
+  <MyCustomComponent />
+</Cascade>
+```
+
+You can also specify a function instead:
+```tsx
+<Cascade
+  cascadeTo={(t, c, o) => {
+    if (t === 'button') {
+      return {...c.buttonProps, ...o}
+    }
+    if (t === MyCustomComponent) {
+      return {...c.customProps, ...o}
+    }
+  }}
+  cascadeProps={{
+    buttonProps: {
+      onClick: onClickHandler,
+    },
+    customProps: {
+      className: 'foobar'
+    }
+  }}
+>
+  <button />
+  <div />
+  <MyCustomComponent />
+</Cascade>
+```
+
+### Nested Cascades
+The `<Cascade>` component can pass through to each other. By default it will both absorb and pass properties.
+However, nested `<Cascade>` components will not cascadeTo the same constrained types, instead widening out again. 
+`<Cascade absorbProps={false} />` will disable absorbing props but will still pass through through properties.
 
 ```tsx
 <Cascade className="foo" cascadeProps={{ className: 'bar' }}>
@@ -80,11 +214,7 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]` .
 </Cascade>;
 ```
 
-The `<Cascade>` component can pass through to each other. By default it will both absorb and pass properties.
-However, nested `<Cascade>` components will not cascadeTo the same constrained types, instead widening out again. 
-`<Cascade absorbProps={false} />` will disable absorbing props but will still pass through through properties.
-
-[View the test cases for more example usages](./packages/react-cascade-component/src/__tests__/Cascade.test.tsx)
+#### [View the test cases for more example usages](./packages/react-cascade-component/src/__tests__/Cascade.test.tsx)
 
 ## Alternatives
 
