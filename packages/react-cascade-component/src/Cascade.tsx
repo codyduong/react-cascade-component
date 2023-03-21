@@ -98,19 +98,21 @@ export type CascadeProps<
   CascadeAsProps<ElemType>;
 
 function Cascade<
-  ElemType extends keyof JSX.IntrinsicElements = 'div',
+  ExtraProps extends Record<string, unknown> = Record<string, any>,
   CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
+  ElemType extends
+    | keyof JSX.IntrinsicElements
+    | React.JSXElementConstructor<any> = 'div'
 >(
   props: CascadeProps<ElemType, CascadeTo, ExtraProps>,
   ref: CascadeRef<ElemType>
 ): JSX.Element;
 function Cascade<
+  ExtraProps extends Record<string, unknown> = Record<string, any>,
+  CascadeTo extends CascadeAsType = CascadeToDefault,
   ElemType extends
     | keyof JSX.IntrinsicElements
-    | React.JSXElementConstructor<any> = 'div',
-  CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
+    | React.JSXElementConstructor<any> = 'div'
 >(
   /* eslint-disable prettier/prettier */
   {
@@ -208,11 +210,11 @@ function Cascade<
 }
 
 type CascadeFC = <
+  ExtraProps extends Record<string, unknown> = Record<string, any>,
+  CascadeTo extends CascadeAsType = CascadeToDefault,
   ElemType extends
     | keyof JSX.IntrinsicElements
-    | React.JSXElementConstructor<any> = 'div',
-  CascadeTo extends CascadeAsType = CascadeToDefault,
-  ExtraProps extends Record<string, unknown> = Record<string, any>
+    | React.JSXElementConstructor<any> = 'div'
 >(
   props: CascadeProps<ElemType, CascadeTo, ExtraProps>
 ) => JSX.Element;
