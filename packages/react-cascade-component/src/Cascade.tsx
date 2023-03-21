@@ -131,9 +131,9 @@ function Cascade<
     !Array.isArray(cascadeTo)
   ) {
     throw new TypeError(
-      `Expected cascadeTo be of type: undefined, string, function, or array. Received: ${
-        cascadeTo === null ? 'null' : typeof cascadeTo
-      }`
+      `Expected cascadeTo be of type: undefined, string, function, or array. \n\nReceived: ${utils.displayType(
+        cascadeTo
+      )}`
     );
   }
 

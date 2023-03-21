@@ -274,7 +274,7 @@ describe('Cascade', () => {
         cascadeProps={{ divClassName: 'bar' }}
         cascadeTo={(t: 'div' | 'span', c, o) => {
           if (t === 'div') {
-            return { ...c, className: c.divClassName, ...o };
+            return { className: c.divClassName, ...o };
           } else {
             return o;
           }
@@ -350,5 +350,45 @@ describe('Cascade', () => {
     expect(c.getElementsByClassName('bang')).toHaveLength(2);
 
     expect(c.firstElementChild?.childNodes).toHaveLength(5);
+  });
+  describe('invalid cascadeTo', () => {
+    test.each([null, false, NaN, { foo: 'bar' }])('%j', (cascadeTo) => {
+      const consoleError = jest
+        .spyOn(global.console, 'error')
+        .mockImplementation();
+      expect(() => {
+        // @ts-expect-error: Passing invalid elements on purpose
+        render(<C cascadeTo={cascadeTo} />);
+      }).toThrow();
+      consoleError.mockRestore();
+    });
+    test.each([
+      {
+        cascadeTo: [],
+        callAmount: 1,
+      },
+      {
+        cascadeTo: [[]],
+        callAmount: 1,
+      },
+      { cascadeTo: [['foo', 'bar', 'baz']], callAmount: 1 },
+      {
+        cascadeTo: [null, false, NaN, undefined, { foo: 'bar' }],
+        callAmount: 5,
+      },
+    ])('%j', ({ cascadeTo, callAmount }) => {
+      const consoleError = jest
+        .spyOn(global.console, 'error')
+        .mockImplementation();
+      render(
+        // @ts-expect-error: Passing invalid elements on purpose
+        <C cascadeTo={cascadeTo}>
+          {/* It requires a child for this test, otherwise cascadeTo is never evaluated */}
+          <div />
+        </C>
+      );
+      expect(consoleError).toHaveBeenCalledTimes(callAmount);
+      consoleError.mockRestore();
+    });
   });
 });
