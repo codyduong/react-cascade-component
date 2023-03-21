@@ -1,72 +1,113 @@
 import React from 'react';
 import * as utils from './utils';
+import { ParsedCascadeToReturn } from './utils';
 
-export type CascadeAsElement =
+export type CascadeAsType =
   | keyof JSX.IntrinsicElements
   | React.JSXElementConstructor<any>;
 
-export type CascadeToElements =
-  | CascadeAsElement
-  | CascadeAsElement[]
-  | ReadonlyArray<CascadeAsElement>;
+export type CascadeToCallbackSingle<
+  ElemType extends CascadeAsType,
+  ExtraPropsFix extends Record<string, unknown>
+> = (
+  type: ElemType,
+  cascadedProps: utils.GetProps<ElemType> & ExtraPropsFix,
+  originalProps: utils.GetProps<ElemType>
+) => utils.GetProps<ElemType> | undefined;
 
-export type CascadeToProps<T extends CascadeToElements> = T extends
-  | any[]
-  | readonly any[]
-  ? (keyof JSX.IntrinsicElements)[] extends T
-    ? Record<string, unknown>
-    : utils.UnionToIntersection<
-        React.PropsWithoutRef<utils.GetProps<T[number]>>
-      >
-  : utils.GetProps<T>;
+export type CascadeToCallbackObject<
+  ElemType extends CascadeAsType,
+  ExtraPropsFix extends Record<string, unknown>
+> = {
+  type: ElemType;
+  callback?: (
+    cascadedProps: utils.GetProps<ElemType> & ExtraPropsFix,
+    originalProps: utils.GetProps<ElemType>
+  ) => utils.GetProps<ElemType> | undefined;
+};
+
+export type CascadeToCallbackArray<
+  ElemType extends CascadeAsType,
+  ExtraPropsFix extends Record<string, unknown>
+> = [
+  type: CascadeToCallbackObject<ElemType, ExtraPropsFix>['type'],
+  callback: CascadeToCallbackObject<ElemType, ExtraPropsFix>['callback']
+];
+
+export type CascadeToArrayGeneric = any;
+
+export type CascadeToArray<
+  CascadeTo extends CascadeAsType,
+  ExtraPropsFix extends Record<string, unknown>
+> =
+  | CascadeTo
+  | CascadeToCallbackSingle<CascadeTo, ExtraPropsFix>
+  | utils.ArrayUnionReadonlyArray<
+      | CascadeTo
+      | CascadeToCallbackObject<CascadeTo, ExtraPropsFix>
+      | CascadeToCallbackArray<CascadeTo, ExtraPropsFix>
+    >;
+
+export type CascadeToPropsInner<T extends CascadeAsType> =
+  (keyof JSX.IntrinsicElements)[] extends T[]
+    ? never
+    : utils.UnionToIntersection<React.PropsWithoutRef<utils.GetProps<T>>>;
+
+export type CascadeToProps<
+  T extends CascadeAsType,
+  ExtraProps extends Record<string, unknown>
+> = CascadeToPropsInner<T> extends never
+  ? ExtraProps
+  : Omit<ExtraProps, keyof CascadeToPropsInner<T>> & CascadeToPropsInner<T>;
 
 export type CascadeBaseProps<
-  Element extends CascadeAsElement,
-  ChildElements extends CascadeToElements,
+  ElemType extends CascadeAsType,
+  CascadeTo extends CascadeAsType,
   ExtraProps extends Record<string, unknown>
 > = {
-  as?: Element;
-  cascadeTo?: ChildElements;
-  cascadeProps?: CascadeToProps<ChildElements> &
-    Omit<ExtraProps, keyof CascadeToProps<ChildElements>>;
+  as?: ElemType;
+  cascadeTo?: CascadeToArray<CascadeTo, CascadeToProps<CascadeTo, ExtraProps>>;
+  cascadeProps?: CascadeToProps<CascadeTo, ExtraProps>;
   absorbProps?: boolean;
   // passProps?: boolean;
 };
 
-export type CascadeAsProps<Element extends CascadeAsElement> = Omit<
-  utils.GetProps<Element>,
-  keyof CascadeBaseProps<Element, any, any>
+export type CascadeAsProps<ElemType extends CascadeAsType> = Omit<
+  utils.GetProps<ElemType>,
+  keyof CascadeBaseProps<ElemType, any, any>
 >;
 
-export type CascadeRef<Element extends CascadeAsElement> = CascadeProps<
-  Element,
+export type CascadeRef<ElemType extends CascadeAsType> = CascadeProps<
+  ElemType,
   any,
   any
 > extends { ref: any }
-  ? CascadeProps<Element, any, any>['ref']
+  ? CascadeProps<ElemType, any, any>['ref']
   : any;
 
+export type CascadeToDefault = keyof JSX.IntrinsicElements;
+
 export type CascadeProps<
-  Element extends CascadeAsElement,
-  ChildElements extends CascadeToElements,
+  ElemType extends CascadeAsType,
+  CascadeTo extends CascadeAsType,
   ExtraProps extends Record<string, unknown>
-> = CascadeBaseProps<Element, ChildElements, ExtraProps> &
-  CascadeAsProps<Element>;
+> = CascadeBaseProps<ElemType, CascadeTo, ExtraProps> &
+  CascadeAsProps<ElemType>;
 
 function Cascade<
-  Element extends keyof JSX.IntrinsicElements = 'div',
-  ChildElements extends CascadeToElements = (keyof JSX.IntrinsicElements)[],
-  ExtraProps extends Record<string, unknown> = Record<string, unknown>
+  ElemType extends keyof JSX.IntrinsicElements = 'div',
+  CascadeTo extends CascadeAsType = CascadeToDefault,
+  ExtraProps extends Record<string, unknown> = Record<string, any>
 >(
-  props: CascadeProps<Element, ChildElements, ExtraProps>,
-  ref: CascadeRef<Element>
+  props: CascadeProps<ElemType, CascadeTo, ExtraProps>,
+  ref: CascadeRef<ElemType>
 ): JSX.Element;
 function Cascade<
-  Element extends
+  ElemType extends
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any> = 'div',
-  ChildElements extends CascadeToElements = (keyof JSX.IntrinsicElements)[],
-  ExtraProps extends Record<string, unknown> = Record<string, unknown>
+  CascadeTo extends CascadeAsType = CascadeToDefault,
+  ExtraProps extends Record<string, unknown> = Record<string, any>
 >(
   /* eslint-disable prettier/prettier */
   {
@@ -80,9 +121,26 @@ function Cascade<
     absorbProps: _a,
     // passProps: _b,
     ...rest
-  }: CascadeProps<Element, ChildElements, ExtraProps>,
-  ref: CascadeRef<Element>
+  }: CascadeProps<ElemType, CascadeTo, ExtraProps>,
+  ref: CascadeRef<ElemType>
 ): JSX.Element {
+  if (
+    !(cascadeTo === undefined) &&
+    !(typeof cascadeTo === 'string') &&
+    !(typeof cascadeTo === 'function' && cascadeTo.length === 3) &&
+    !Array.isArray(cascadeTo)
+  ) {
+    throw new TypeError(
+      `Expected cascadeTo be of type: undefined, string, function, or array. Received: ${
+        cascadeTo === null ? 'null' : typeof cascadeTo
+      }`
+    );
+  }
+
+  let flattenedCascadeToArray: ParsedCascadeToReturn<
+    CascadeAsType,
+    CascadeToProps<CascadeTo, ExtraProps>
+  >;
   const children = React.Children.toArray(cascadeChildren).map((E) => {
     if (!React.isValidElement(E)) {
       return E;
@@ -111,13 +169,32 @@ function Cascade<
     if (!cascadeTo) {
       return React.createElement(E.type, props);
     }
-    if (Array.isArray(cascadeTo) && cascadeTo.indexOf(E.type as any) !== -1) {
-      return React.createElement(E.type, props);
-    }
     if (cascadeTo === E.type) {
       return React.createElement(E.type, props);
     }
-
+    if (typeof cascadeTo === 'function' && cascadeTo.length === 3) {
+      return React.createElement(
+        E.type,
+        (cascadeTo as CascadeToCallbackSingle<any, any>)(
+          E.type,
+          cascadeProps,
+          E.props
+        )
+      );
+    }
+    if (
+      (Array.isArray as (arg: any) => arg is any[] | Readonly<any[]>)(cascadeTo)
+    ) {
+      flattenedCascadeToArray ||= utils.parseCascadeTo<any, any>(cascadeTo);
+      const found = flattenedCascadeToArray[0].indexOf(E.type as CascadeAsType);
+      if (found !== -1) {
+        const callback = flattenedCascadeToArray[1][found];
+        return React.createElement(
+          E.type,
+          callback ? callback(cascadeProps ?? ({} as any), E.props) : props
+        );
+      }
+    }
     return E;
   });
 
@@ -125,21 +202,21 @@ function Cascade<
 }
 
 type CascadeFC = <
-  Element extends
+  ElemType extends
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any> = 'div',
-  ChildElements extends CascadeToElements = (keyof JSX.IntrinsicElements)[],
-  ExtraProps extends Record<string, unknown> = Record<string, unknown>
+  CascadeTo extends CascadeAsType = CascadeToDefault,
+  ExtraProps extends Record<string, unknown> = Record<string, any>
 >(
-  props: CascadeProps<Element, ChildElements, ExtraProps>
+  props: CascadeProps<ElemType, CascadeTo, ExtraProps>
 ) => JSX.Element;
-const CascadeFC = React.forwardRef(Cascade);
+export const CascadeFC = React.forwardRef(Cascade);
 
-type CascadeIntrinsicElement<Element extends keyof JSX.IntrinsicElements> = <
-  ChildElements extends CascadeToElements = (keyof JSX.IntrinsicElements)[],
-  ExtraProps extends Record<string, unknown> = Record<string, unknown>
+type CascadeIntrinsicElement<ElemType extends keyof JSX.IntrinsicElements> = <
+  CascadeTo extends CascadeAsType = CascadeToDefault,
+  ExtraProps extends Record<string, unknown> = Record<string, any>
 >(
-  props: CascadeProps<Element, ChildElements, ExtraProps>
+  props: CascadeProps<ElemType, CascadeTo, ExtraProps>
 ) => JSX.Element;
 
 function createCascadeIntrinsic<Key extends keyof JSX.IntrinsicElements>(

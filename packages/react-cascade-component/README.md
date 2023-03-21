@@ -40,7 +40,7 @@ const App = () => {
 ```
 
 Cascade by default is a `div` element but can be of any `JSX.IntrinsicElement` by setting
-the `as` prop value or using `Cascade.[JSX.IntrinsicElement]`.
+the `as` prop value or using `Cascade.[JSX.IntrinsicElement]` .
 
 ```tsx
 <Cascade as="span">{/* ... */}</Cascade>
@@ -55,21 +55,21 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]`.
     className="bang" 
     cascadeTo={[Cascade, Cascade.label, 'span']}
   >
-    <Cascade.span>                {/* className="bar" */}
+    <Cascade.span>                
       <div />
       <div />
-      <span />                    {/* className="bar" */}
+      <span />                    
       <label />
     </Cascade.span>
     <Cascade.label>               {/* className="bar" */}
       <span />                    {/* className="bar" */}
-      <label />
+      <label />                   {/* className="bar" */}
     </Cascade.label>
     <Cascade                      /* className=undefined */
       absorbProps={false}
       cascadeTo="label"
     > 
-      <span />                    
+      <span />                    {/* className="bar" */}
       <label />                   {/* className="bar" */}
     </Cascade>
     <div>
@@ -80,8 +80,9 @@ the `as` prop value or using `Cascade.[JSX.IntrinsicElement]`.
 </Cascade>;
 ```
 
-The `<Cascade>` component can pass through to each other. By default it will both absorb the passed properties and
-continue to pass through the other components. 
+The `<Cascade>` component can pass through to each other. By default it will both absorb and pass properties.
+However, nested `<Cascade>` components will not cascadeTo the same constrained types, instead widening out again. 
+`<Cascade absorbProps={false} />` will disable absorbing props but will still pass through through properties.
 
 [View the test cases for more example usages](./packages/react-cascade-component/src/__tests__/Cascade.test.tsx)
 
@@ -91,6 +92,7 @@ If you are simply using `react-cascade-component` as a means to transfer props d
 instead consider using React's built-in [ `useContext` ](https://react.dev/reference/react/useContext).
 
 ## Contribute
+
 Contributions are welcome!
 
 ## License

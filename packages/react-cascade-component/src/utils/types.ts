@@ -6,6 +6,9 @@ export type UnionToIntersection<Union> = (
 
 export type GetProps<T> = T extends keyof JSX.IntrinsicElements
   ? JSX.IntrinsicElements[T]
-  : Element extends React.JSXElementConstructor<infer P>
+  : T extends React.JSXElementConstructor<infer P>
   ? P
-  : Record<string, never>;
+  : Record<string, unknown>;
+
+export type ArrayUnionReadonlyArray<T> = Array<T> | ReadonlyArray<T>;
+export type UnionReadonly<T> = T | Readonly<T>;
