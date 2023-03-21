@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import domElements from '../utils/domElements';
-import C from '../Cascade';
+import C from 'react-cascade-component';
 
 // Filter out some html elements that require certain dom shapes
 // or require a certain testing env to display
